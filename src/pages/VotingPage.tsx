@@ -52,7 +52,7 @@ function VotingPage() {
     () =>
       students.map((student) => ({
         value: student.roll_number,
-        label: `${student.roll_number} — ${student.name}`,
+        label: `${student.roll_number} - ${student.name}`,
       })),
     [students],
   );
@@ -72,7 +72,7 @@ function VotingPage() {
   }
 
   function handleRollNumberChange(value: string) {
-    setVoterRollNumber(value.toUpperCase());
+    setVoterRollNumber(value);
     setValidatedVoter(null);
   }
 
@@ -269,6 +269,8 @@ function VotingPage() {
       .eq("roll_number", validatedVoter.rollNumber)
       .maybeSingle();
 
+    console.log("duplicateCheck", duplicateCheck);
+
     if (duplicateCheck.data) {
       setFeedback({ type: "error", message: "This roll number has already submitted a vote." });
       setSubmitting(false);
@@ -313,14 +315,20 @@ function VotingPage() {
       return;
     }
 
+    const submissionPayload = {
+      roll_number: validatedVoter.rollNumber,
+      student_name: validatedVoter.studentName,
+    };
+
+    console.log("submissionPayload", submissionPayload);
+
     const submissionResponse = await supabase
       .from("submissions")
-      .insert({
-        roll_number: validatedVoter.rollNumber,
-        student_name: validatedVoter.studentName,
-      })
+      .insert(submissionPayload)
       .select("id")
       .single();
+
+    console.log("submissionResponse", submissionResponse);
 
     if (submissionResponse.error) {
       setFeedback({

@@ -40,7 +40,9 @@ function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedOption = options.find((option) => option.value === value);
+  const selectedOption =
+    options.find((option) => option.value === value) ??
+    options.find((option) => option.value.toLowerCase() === value.toLowerCase());
 
   const filteredOptions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

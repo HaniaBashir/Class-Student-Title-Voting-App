@@ -87,4 +87,6 @@ export const TITLES = [
   { title_name: "Golden Heart", display_order: 40, title_type: "single" },
   { title_name: "Last Minute Legend", display_order: 41, title_type: "single" },
   { title_name: "Comfort Person", display_order: 42, title_type: "single" },
+  { title_name: "Soft Soul", display_order: 43, title_type: "single" },
+  { title_name: "Lowkey but Loved", display_order: 44, title_type: "single" },
 ] as const;
