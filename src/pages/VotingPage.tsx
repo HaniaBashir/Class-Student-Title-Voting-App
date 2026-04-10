@@ -47,6 +47,7 @@ function VotingPage() {
     () => new Map(students.map((student) => [student.roll_number, student])),
     [students],
   );
+  const selectedVoter = voterRollNumber ? studentLookup.get(voterRollNumber) : null;
   const voterOptions: SelectOption[] = useMemo(
     () =>
       students.map((student) => ({
@@ -429,6 +430,12 @@ function VotingPage() {
                 onChange={handleRollNumberChange}
                 helperText="Select your roll number from the class list"
               />
+
+              {selectedVoter ? (
+                <p className="text-sm text-slate-500">
+                  Selected: <span className="font-medium text-slate-700">{selectedVoter.name}</span>
+                </p>
+              ) : null}
 
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
