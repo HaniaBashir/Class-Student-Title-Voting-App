@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import ConfirmationModal from "../components/ConfirmationModal";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SearchableSelect from "../components/SearchableSelect";
 import TitleVoteCard from "../components/TitleVoteCard";
 import { useVotingData } from "../hooks/useVotingData";
 import { supabase } from "../lib/supabase";
@@ -44,6 +45,14 @@ function VotingPage() {
   const answeredCount = countAnsweredTitles(selections);
   const studentLookup = useMemo(
     () => new Map(students.map((student) => [student.roll_number, student])),
+    [students],
+  );
+  const voterOptions: SelectOption[] = useMemo(
+    () =>
+      students.map((student) => ({
+        value: student.roll_number,
+        label: `${student.roll_number} — ${student.name}`,
+      })),
     [students],
   );
 
@@ -187,7 +196,7 @@ function VotingPage() {
 
   async function prepareSubmission() {
     if (!voterRollNumber.trim()) {
-      setFeedback({ type: "error", message: "Please enter your roll number before submitting." });
+      setFeedback({ type: "error", message: "Please select your roll number before submitting." });
       return;
     }
 
@@ -412,19 +421,14 @@ function VotingPage() {
             </p>
 
             <div className="mt-8 space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-card">
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <label className="text-sm font-medium text-slate-800">Roll number</label>
-                  <span className="text-xs text-slate-400">Used as your voter identity</span>
-                </div>
-                <input
-                  type="text"
-                  value={voterRollNumber}
-                  onChange={(event) => handleRollNumberChange(event.target.value)}
-                  placeholder="Enter your roll number"
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm uppercase outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-accent-500/10"
-                />
-              </div>
+              <SearchableSelect
+                label="Roll number"
+                placeholder="Search and select your roll number"
+                value={voterRollNumber}
+                options={voterOptions}
+                onChange={handleRollNumberChange}
+                helperText="Select your roll number from the class list"
+              />
 
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
