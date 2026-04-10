@@ -15,23 +15,28 @@ export function useVotingData() {
       setError(null);
 
       const [studentsResponse, titlesResponse] = await Promise.all([
-        supabase.from("students").select("id, name").order("name"),
-        supabase.from("titles").select("id, title_name, display_order").order("display_order"),
+        supabase.from("students").select("id, roll_number, name").order("roll_number"),
+        supabase
+          .from("titles")
+          .select("id, title_name, display_order, title_type")
+          .order("display_order"),
       ]);
 
       if (studentsResponse.error || titlesResponse.error) {
         setError("Live data could not be loaded, so local placeholder data is being used.");
         setStudents(
-          STUDENTS.map((name, index) => ({
+          STUDENTS.map((student, index) => ({
             id: `fallback-student-${index + 1}`,
-            name,
+            roll_number: student.roll_number,
+            name: student.name,
           })),
         );
         setTitles(
-          TITLES.map((title_name, index) => ({
+          TITLES.map((title, index) => ({
             id: `fallback-title-${index + 1}`,
-            title_name,
-            display_order: index + 1,
+            title_name: title.title_name,
+            display_order: title.display_order ?? index + 1,
+            title_type: title.title_type,
           })),
         );
         setLoading(false);

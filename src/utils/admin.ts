@@ -3,25 +3,35 @@ import type { AggregatedVote, Title } from "../types";
 type VoteRow = {
   title_id: string;
   selected_student_name: string;
+  selected_student_name_2: string | null;
   titles:
     | {
         title_name: string;
         display_order: number;
+        title_type: Title["title_type"];
       }[]
     | {
-    title_name: string;
-    display_order: number;
+        title_name: string;
+        display_order: number;
+        title_type: Title["title_type"];
       }
     | null;
 };
 
+function buildPairLabel(firstName: string, secondName: string) {
+  return [firstName, secondName].sort((a, b) => a.localeCompare(b)).join(" + ");
+}
+
 export function aggregateVotes(titles: Title[], votes: VoteRow[]): AggregatedVote[] {
   const grouped = votes.reduce<Map<string, Map<string, number>>>((acc, vote) => {
+    const titleInfo = Array.isArray(vote.titles) ? vote.titles[0] : vote.titles;
+    const isDuoTitle = titleInfo ? titleInfo.title_type === "duo" : false;
+    const bucketName =
+      isDuoTitle && vote.selected_student_name_2
+        ? buildPairLabel(vote.selected_student_name, vote.selected_student_name_2)
+        : vote.selected_student_name;
     const byStudent = acc.get(vote.title_id) ?? new Map<string, number>();
-    byStudent.set(
-      vote.selected_student_name,
-      (byStudent.get(vote.selected_student_name) ?? 0) + 1,
-    );
+    byStudent.set(bucketName, (byStudent.get(bucketName) ?? 0) + 1);
     acc.set(vote.title_id, byStudent);
     return acc;
   }, new Map());
@@ -39,6 +49,7 @@ export function aggregateVotes(titles: Title[], votes: VoteRow[]): AggregatedVot
       return {
         titleId: title.id,
         titleName: title.title_name,
+        titleType: title.title_type,
         totalVotes: chartData.reduce((sum, item) => sum + item.votes, 0),
         winner: chartData[0]
           ? {

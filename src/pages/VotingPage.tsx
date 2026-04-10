@@ -1,20 +1,33 @@
 import { AlertCircle, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import ConfirmationModal from "../components/ConfirmationModal";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SearchableSelect from "../components/SearchableSelect";
 import TitleVoteCard from "../components/TitleVoteCard";
 import { useVotingData } from "../hooks/useVotingData";
 import { supabase } from "../lib/supabase";
 import type { SelectOption, VoteSelections } from "../types";
-import { buildInitialSelections, countAnsweredTitles, getDisabledStudentNames } from "../utils/voting";
+import {
+  buildInitialSelections,
+  countAnsweredTitles,
+  getDisabledStudentValues,
+} from "../utils/voting";
+
+const EMPTY_RESULTS_ERROR_CODE = "PGRST116";
+
+type ValidatedVoter = {
+  credentialId: string;
+  rollNumber: string;
+  studentName: string;
+};
 
 function VotingPage() {
   const navigate = useNavigate();
   const { students, titles, loading, error } = useVotingData();
-  const [voterName, setVoterName] = useState("");
+  const [voterRollNumber, setVoterRollNumber] = useState("");
+  const [voterPassword, setVoterPassword] = useState("");
+  const [validatedVoter, setValidatedVoter] = useState<ValidatedVoter | null>(null);
   const [selections, setSelections] = useState<VoteSelections>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -29,27 +42,210 @@ function VotingPage() {
   }, [titles, selections]);
 
   const answeredCount = countAnsweredTitles(selections);
-  const voterOptions: SelectOption[] = students.map((student) => ({
-    value: student.name,
-    label: student.name,
-  }));
+  const studentLookup = useMemo(
+    () => new Map(students.map((student) => [student.roll_number, student])),
+    [students],
+  );
 
-  function handleTitleChange(titleId: string, studentName: string) {
+  function handleTitleChange(
+    titleId: string,
+    field: "primary" | "secondary",
+    studentRollNumber: string,
+  ) {
     setSelections((current) => ({
       ...current,
-      [titleId]: studentName,
+      [titleId]: {
+        ...current[titleId],
+        [field]: studentRollNumber,
+      },
     }));
   }
 
+  function handleRollNumberChange(value: string) {
+    setVoterRollNumber(value.toUpperCase());
+    setValidatedVoter(null);
+  }
+
+  function handlePasswordChange(value: string) {
+    setVoterPassword(value);
+    setValidatedVoter(null);
+  }
+
   function resetForm() {
-    setVoterName("");
+    setVoterRollNumber("");
+    setVoterPassword("");
+    setValidatedVoter(null);
     setSelections(buildInitialSelections(titles));
     setFeedback(null);
+    setModalOpen(false);
+  }
+
+  function getIncompleteDuoTitles() {
+    return titles
+      .filter((title) => selections[title.id]?.isDuo)
+      .filter((title) => {
+        const selection = selections[title.id];
+        return Boolean(selection?.primary) !== Boolean(selection?.secondary);
+      })
+      .map((title) => title.title_name);
+  }
+
+  function getDuplicatedDuoTitles() {
+    return titles
+      .filter((title) => selections[title.id]?.isDuo)
+      .filter((title) => {
+        const selection = selections[title.id];
+        return Boolean(selection?.primary) && selection?.primary === selection?.secondary;
+      })
+      .map((title) => title.title_name);
+  }
+
+  function getSelfVoteTitles(voterRoll: string) {
+    return titles
+      .filter((title) => {
+        const selection = selections[title.id];
+        return selection?.primary === voterRoll || selection?.secondary === voterRoll;
+      })
+      .map((title) => title.title_name);
+  }
+
+  async function rollbackSubmission(submissionId: string) {
+    await supabase.from("submissions").delete().eq("id", submissionId);
+  }
+
+  async function validateVoterCredentials() {
+    const rollNumber = voterRollNumber.trim();
+    const password = voterPassword.trim();
+
+    const credentialMatch = await supabase
+      .from("voter_credentials")
+      .select("id, roll_number, student_name, is_used")
+      .eq("roll_number", rollNumber)
+      .eq("voter_password", password)
+      .maybeSingle();
+
+    if (credentialMatch.error && credentialMatch.error.code !== EMPTY_RESULTS_ERROR_CODE) {
+      setFeedback({
+        type: "error",
+        message: "We could not verify your voting credentials right now. Please try again.",
+      });
+      return null;
+    }
+
+    if (!credentialMatch.data) {
+      const credentialByRoll = await supabase
+        .from("voter_credentials")
+        .select("id, roll_number, student_name, is_used")
+        .eq("roll_number", rollNumber)
+        .maybeSingle();
+
+      if (credentialByRoll.error && credentialByRoll.error.code !== EMPTY_RESULTS_ERROR_CODE) {
+        setFeedback({
+          type: "error",
+          message: "We could not verify your voting credentials right now. Please try again.",
+        });
+        return null;
+      }
+
+      if (!credentialByRoll.data) {
+        setFeedback({
+          type: "error",
+          message: "No voter credentials were found for this roll number.",
+        });
+        return null;
+      }
+
+      if (credentialByRoll.data.is_used) {
+        setFeedback({
+          type: "error",
+          message: "This roll number has already used its voting password.",
+        });
+        return null;
+      }
+
+      setFeedback({
+        type: "error",
+        message: "The password does not match this roll number.",
+      });
+      return null;
+    }
+
+    if (credentialMatch.data.is_used) {
+      setFeedback({
+        type: "error",
+        message: "This roll number has already used its voting password.",
+      });
+      return null;
+    }
+
+    return {
+      credentialId: credentialMatch.data.id,
+      rollNumber: credentialMatch.data.roll_number,
+      studentName: credentialMatch.data.student_name,
+    } satisfies ValidatedVoter;
+  }
+
+  async function prepareSubmission() {
+    if (!voterRollNumber.trim()) {
+      setFeedback({ type: "error", message: "Please enter your roll number before submitting." });
+      return;
+    }
+
+    if (!voterPassword.trim()) {
+      setFeedback({ type: "error", message: "Please enter your voting password." });
+      return;
+    }
+
+    const incompleteDuoTitles = getIncompleteDuoTitles();
+    if (incompleteDuoTitles.length > 0) {
+      setFeedback({
+        type: "error",
+        message: `Complete both names for ${incompleteDuoTitles.join(", ")} before submitting.`,
+      });
+      return;
+    }
+
+    const duplicatedDuoTitles = getDuplicatedDuoTitles();
+    if (duplicatedDuoTitles.length > 0) {
+      setFeedback({
+        type: "error",
+        message: `Choose two different students for ${duplicatedDuoTitles.join(", ")}.`,
+      });
+      return;
+    }
+
+    setFeedback(null);
+
+    const validated = await validateVoterCredentials();
+    if (!validated) {
+      setValidatedVoter(null);
+      return;
+    }
+
+    const selfVoteTitles = getSelfVoteTitles(validated.rollNumber);
+    if (selfVoteTitles.length > 0) {
+      setValidatedVoter(validated);
+      setFeedback({
+        type: "error",
+        message: `Self voting is not allowed. Remove yourself from ${selfVoteTitles.join(", ")}.`,
+      });
+      return;
+    }
+
+    setValidatedVoter(validated);
+    setFeedback({
+      type: "success",
+      message: `Validated as ${validated.studentName} (${validated.rollNumber}). Review and confirm your submission.`,
+    });
+    setModalOpen(true);
   }
 
   async function submitVotes() {
-    if (!voterName) {
-      setFeedback({ type: "error", message: "Please select your own name before submitting." });
+    if (!validatedVoter) {
+      setFeedback({
+        type: "error",
+        message: "Please validate your roll number and password before submitting.",
+      });
       setModalOpen(false);
       return;
     }
@@ -60,28 +256,59 @@ function VotingPage() {
     const duplicateCheck = await supabase
       .from("submissions")
       .select("id")
-      .eq("voter_name", voterName)
+      .eq("roll_number", validatedVoter.rollNumber)
       .maybeSingle();
 
     if (duplicateCheck.data) {
-      setFeedback({ type: "error", message: "You have already submitted your vote." });
+      setFeedback({ type: "error", message: "This roll number has already submitted a vote." });
       setSubmitting(false);
       setModalOpen(false);
       return;
     }
 
-    if (duplicateCheck.error && duplicateCheck.error.code !== "PGRST116") {
+    if (duplicateCheck.error && duplicateCheck.error.code !== EMPTY_RESULTS_ERROR_CODE) {
       setFeedback({
         type: "error",
         message: "We could not verify your submission status right now. Please try again.",
       });
       setSubmitting(false);
+      setModalOpen(false);
+      return;
+    }
+
+    const voteRows = Object.entries(selections)
+      .filter(([, selection]) =>
+        selection.isDuo
+          ? Boolean(selection.primary) && Boolean(selection.secondary)
+          : Boolean(selection.primary),
+      )
+      .map(([titleId, selection]) => ({
+        titleId,
+        selection,
+        primaryStudent: studentLookup.get(selection.primary),
+        secondaryStudent: selection.secondary ? studentLookup.get(selection.secondary) : null,
+      }));
+
+    if (
+      voteRows.some(
+        (row) => !row.primaryStudent || (row.selection.isDuo && !row.secondaryStudent),
+      )
+    ) {
+      setFeedback({
+        type: "error",
+        message: "One or more selected students could not be resolved. Please refresh and try again.",
+      });
+      setSubmitting(false);
+      setModalOpen(false);
       return;
     }
 
     const submissionResponse = await supabase
       .from("submissions")
-      .insert({ voter_name: voterName })
+      .insert({
+        roll_number: validatedVoter.rollNumber,
+        student_name: validatedVoter.studentName,
+      })
       .select("id")
       .single();
 
@@ -90,7 +317,7 @@ function VotingPage() {
         type: "error",
         message:
           submissionResponse.error.code === "23505"
-            ? "You have already submitted your vote."
+            ? "This roll number has already submitted a vote."
             : "Something went wrong while saving your submission. Please try again.",
       });
       setSubmitting(false);
@@ -98,19 +325,18 @@ function VotingPage() {
       return;
     }
 
-    const voteRows = Object.entries(selections)
-      .filter(([, studentName]) => Boolean(studentName))
-      .map(([titleId, studentName]) => ({
-        submission_id: submissionResponse.data.id,
-        title_id: titleId,
-        selected_student_name: studentName,
-      }));
-
     if (voteRows.length > 0) {
-      const votesResponse = await supabase.from("submission_votes").insert(voteRows);
+      const votesResponse = await supabase.from("submission_votes").insert(
+        voteRows.map((row) => ({
+          submission_id: submissionResponse.data.id,
+          title_id: row.titleId,
+          selected_student_name: row.primaryStudent!.name,
+          selected_student_name_2: row.selection.isDuo ? row.secondaryStudent!.name : null,
+        })),
+      );
 
       if (votesResponse.error) {
-        await supabase.from("submissions").delete().eq("id", submissionResponse.data.id);
+        await rollbackSubmission(submissionResponse.data.id);
         setFeedback({
           type: "error",
           message: "Your submission could not be completed. Please try again.",
@@ -121,8 +347,48 @@ function VotingPage() {
       }
     }
 
+    const credentialUpdate = await supabase
+      .from("voter_credentials")
+      .update({ is_used: true, used_at: new Date().toISOString() })
+      .eq("id", validatedVoter.credentialId)
+      .eq("is_used", false)
+      .select("id")
+      .maybeSingle();
+
+    if (credentialUpdate.error || !credentialUpdate.data) {
+      await rollbackSubmission(submissionResponse.data.id);
+      setFeedback({
+        type: "error",
+        message: "Your submission could not be finalized. Please try again.",
+      });
+      setSubmitting(false);
+      setModalOpen(false);
+      return;
+    }
+
     setSubmitting(false);
-    navigate("/success", { state: { voterName, answeredCount } });
+    navigate("/success", { state: { voterName: validatedVoter.studentName, answeredCount } });
+  }
+
+  function buildOptions(
+    disabledValues: Set<string>,
+    currentTitleId: string,
+    currentField: "primary" | "secondary",
+  ) {
+    const currentValue = selections[currentTitleId]?.[currentField] ?? "";
+
+    return students.map<SelectOption>((student) => {
+      const isSelf = validatedVoter?.rollNumber === student.roll_number;
+      const isDisabled =
+        (disabledValues.has(student.roll_number) && currentValue !== student.roll_number) || isSelf;
+
+      return {
+        value: student.roll_number,
+        label: `${student.name} (${student.roll_number})`,
+        disabled: isDisabled,
+        description: isSelf ? "Self vote blocked" : isDisabled ? "Selected already" : undefined,
+      };
+    });
   }
 
   if (loading) {
@@ -141,19 +407,45 @@ function VotingPage() {
               Choose thoughtfully
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
-              Pick the classmates who best fit each farewell title. You can skip any title, and
-              each classmate can only be selected once in your submission.
+              Log in with your roll number and password, then assign classmates to each title. All
+              titles are optional, but self voting is not allowed.
             </p>
 
-            <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-card">
-              <SearchableSelect
-                label="Your name"
-                placeholder="Search and select your name"
-                value={voterName}
-                options={voterOptions}
-                onChange={setVoterName}
-                helperText="Used to prevent duplicate submissions"
-              />
+            <div className="mt-8 space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-card">
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <label className="text-sm font-medium text-slate-800">Roll number</label>
+                  <span className="text-xs text-slate-400">Used as your voter identity</span>
+                </div>
+                <input
+                  type="text"
+                  value={voterRollNumber}
+                  onChange={(event) => handleRollNumberChange(event.target.value)}
+                  placeholder="Enter your roll number"
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm uppercase outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-accent-500/10"
+                />
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <label className="text-sm font-medium text-slate-800">Voting password</label>
+                  <span className="text-xs text-slate-400">One-time password per student</span>
+                </div>
+                <input
+                  type="password"
+                  value={voterPassword}
+                  onChange={(event) => handlePasswordChange(event.target.value)}
+                  placeholder="Enter your assigned password"
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-accent-500/10"
+                />
+              </div>
+
+              {validatedVoter ? (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  Validated student: <span className="font-semibold">{validatedVoter.studentName}</span>{" "}
+                  <span className="text-emerald-700">({validatedVoter.rollNumber})</span>
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -165,8 +457,10 @@ function VotingPage() {
               </div>
               <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-card">
                 <p className="text-sm text-slate-500">Submission policy</p>
-                <p className="mt-2 text-base font-medium text-slate-900">One vote per student</p>
-                <p className="mt-1 text-sm text-slate-500">Duplicate voter names are blocked.</p>
+                <p className="mt-2 text-base font-medium text-slate-900">One vote per roll number</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Roll number and password must match before your vote is accepted.
+                </p>
               </div>
             </div>
 
@@ -195,11 +489,11 @@ function VotingPage() {
                 Reset form
               </Button>
               <Button
-                onClick={() => setModalOpen(true)}
-                disabled={!voterName || submitting}
+                onClick={() => void prepareSubmission()}
+                disabled={!voterRollNumber.trim() || !voterPassword.trim() || submitting}
                 className="sm:ml-auto"
               >
-                Submit votes
+                Review submission
               </Button>
             </div>
           </div>
@@ -207,21 +501,27 @@ function VotingPage() {
 
         <div className="space-y-4">
           {titles.map((title) => {
-            const disabledStudents = getDisabledStudentNames(selections, title.id);
-            const options: SelectOption[] = students.map((student) => ({
-              value: student.name,
-              label: student.name,
-              disabled: disabledStudents.has(student.name),
-              description: disabledStudents.has(student.name) ? "Selected already" : undefined,
-            }));
+            const selection = selections[title.id];
+            const primaryDisabledStudents = getDisabledStudentValues(selections, title.id, "primary");
+            const secondaryDisabledStudents = getDisabledStudentValues(
+              selections,
+              title.id,
+              "secondary",
+            );
 
             return (
               <TitleVoteCard
                 key={title.id}
                 title={title}
-                value={selections[title.id] ?? ""}
-                options={options}
-                onChange={(studentName) => handleTitleChange(title.id, studentName)}
+                primaryValue={selection?.primary ?? ""}
+                secondaryValue={selection?.secondary ?? ""}
+                primaryOptions={buildOptions(primaryDisabledStudents, title.id, "primary")}
+                secondaryOptions={buildOptions(secondaryDisabledStudents, title.id, "secondary")}
+                isDuoTitle={selection?.isDuo ?? false}
+                onPrimaryChange={(studentRoll) => handleTitleChange(title.id, "primary", studentRoll)}
+                onSecondaryChange={(studentRoll) =>
+                  handleTitleChange(title.id, "secondary", studentRoll)
+                }
               />
             );
           })}
@@ -230,7 +530,8 @@ function VotingPage() {
 
       <ConfirmationModal
         open={modalOpen}
-        voterName={voterName}
+        voterName={validatedVoter?.studentName ?? "Validated voter"}
+        voterRollNumber={validatedVoter?.rollNumber}
         answeredCount={answeredCount}
         totalTitles={titles.length}
         onCancel={() => setModalOpen(false)}

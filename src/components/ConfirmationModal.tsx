@@ -3,6 +3,7 @@ import Button from "./Button";
 type ConfirmationModalProps = {
   open: boolean;
   voterName: string;
+  voterRollNumber?: string;
   answeredCount: number;
   totalTitles: number;
   onCancel: () => void;
@@ -13,6 +14,7 @@ type ConfirmationModalProps = {
 function ConfirmationModal({
   open,
   voterName,
+  voterRollNumber,
   answeredCount,
   totalTitles,
   onCancel,
@@ -32,8 +34,15 @@ function ConfirmationModal({
         <h2 className="mt-3 text-2xl font-semibold text-slate-900">Ready to submit your vote?</h2>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           You are submitting as <span className="font-semibold text-slate-900">{voterName}</span>.
-          {" "}
-          You answered {answeredCount} out of {totalTitles} titles. You will not be able to submit again with the same name.
+          {voterRollNumber ? (
+            <>
+              {" "}
+              <span className="text-slate-500">({voterRollNumber})</span>.
+            </>
+          ) : (
+            "."
+          )}{" "}
+          You answered {answeredCount} out of {totalTitles} titles. This password will be marked as used after a successful submission.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">

@@ -14,7 +14,7 @@ function ResultChart({ result }: ResultChartProps) {
           <p className="mt-1 text-sm text-slate-500">{result.totalVotes} total votes cast</p>
         </div>
         <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm">
-          <p className="text-slate-400">Winner</p>
+          <p className="text-slate-400">{result.titleType === "duo" ? "Leading duo" : "Winner"}</p>
           <p className="mt-1 font-semibold text-slate-900">
             {result.winner ? `${result.winner.name} (${result.winner.count})` : "No votes yet"}
           </p>

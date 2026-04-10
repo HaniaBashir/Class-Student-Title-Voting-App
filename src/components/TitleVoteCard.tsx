@@ -3,12 +3,29 @@ import SearchableSelect from "./SearchableSelect";
 
 type TitleVoteCardProps = {
   title: Title;
-  value: string;
-  options: SelectOption[];
-  onChange: (value: string) => void;
+  primaryValue: string;
+  secondaryValue?: string;
+  primaryOptions: SelectOption[];
+  secondaryOptions?: SelectOption[];
+  isDuoTitle?: boolean;
+  onPrimaryChange: (value: string) => void;
+  onSecondaryChange?: (value: string) => void;
 };
 
-function TitleVoteCard({ title, value, options, onChange }: TitleVoteCardProps) {
+function TitleVoteCard({
+  title,
+  primaryValue,
+  secondaryValue = "",
+  primaryOptions,
+  secondaryOptions,
+  isDuoTitle = false,
+  onPrimaryChange,
+  onSecondaryChange,
+}: TitleVoteCardProps) {
+  const isAnswered = isDuoTitle
+    ? Boolean(primaryValue) && Boolean(secondaryValue)
+    : Boolean(primaryValue);
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-card sm:p-6">
       <div className="mb-4 flex items-start justify-between gap-4">
@@ -18,7 +35,7 @@ function TitleVoteCard({ title, value, options, onChange }: TitleVoteCardProps) 
           </p>
           <h3 className="mt-2 text-lg font-semibold text-slate-900">{title.title_name}</h3>
         </div>
-        {value ? (
+        {isAnswered ? (
           <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
             Selected
           </span>
@@ -29,15 +46,29 @@ function TitleVoteCard({ title, value, options, onChange }: TitleVoteCardProps) 
         )}
       </div>
 
-      <SearchableSelect
-        label="Select a classmate"
-        placeholder="Search and choose a student"
-        value={value}
-        options={options}
-        onChange={onChange}
-        helperText="Each student can only be used once per submission"
-        clearLabel="Skip this title"
-      />
+      <div className="space-y-4">
+        <SearchableSelect
+          label={isDuoTitle ? "Person 1" : "Select a classmate"}
+          placeholder="Search and choose a student"
+          value={primaryValue}
+          options={primaryOptions}
+          onChange={onPrimaryChange}
+          helperText="Each student can only be used once per submission"
+          clearLabel="Skip this title"
+        />
+
+        {isDuoTitle ? (
+          <SearchableSelect
+            label="Person 2"
+            placeholder="Search and choose a second student"
+            value={secondaryValue}
+            options={secondaryOptions ?? primaryOptions}
+            onChange={onSecondaryChange ?? (() => undefined)}
+            helperText="Choose a different partner for this pair"
+            clearLabel="Clear person 2"
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

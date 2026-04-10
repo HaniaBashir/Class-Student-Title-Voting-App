@@ -1,15 +1,25 @@
 export type Student = {
   id: string;
+  roll_number: string;
   name: string;
 };
+
+export type TitleType = "single" | "duo";
 
 export type Title = {
   id: string;
   title_name: string;
   display_order: number;
+  title_type: TitleType;
 };
 
-export type VoteSelections = Record<string, string>;
+export type TitleSelection = {
+  primary: string;
+  secondary: string;
+  isDuo: boolean;
+};
+
+export type VoteSelections = Record<string, TitleSelection>;
 
 export type SelectOption = {
   value: string;
@@ -21,6 +31,7 @@ export type SelectOption = {
 export type AggregatedVote = {
   titleId: string;
   titleName: string;
+  titleType: TitleType;
   totalVotes: number;
   winner: {
     name: string;

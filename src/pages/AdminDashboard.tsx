@@ -23,19 +23,25 @@ function AdminDashboard() {
     setLoading(true);
     setError(null);
 
-    const titlesFallback: Title[] = TITLES.map((title_name, index) => ({
+    const titlesFallback: Title[] = TITLES.map((title, index) => ({
       id: `fallback-title-${index + 1}`,
-      title_name,
-      display_order: index + 1,
+      title_name: title.title_name,
+      display_order: title.display_order,
+      title_type: title.title_type,
     }));
 
     const [titlesResponse, submissionsResponse, votesCountResponse, votesResponse] = await Promise.all([
-      supabase.from("titles").select("id, title_name, display_order").order("display_order"),
+      supabase
+        .from("titles")
+        .select("id, title_name, display_order, title_type")
+        .order("display_order"),
       supabase.from("submissions").select("*", { count: "exact", head: true }),
       supabase.from("submission_votes").select("*", { count: "exact", head: true }),
       supabase
         .from("submission_votes")
-        .select("title_id, selected_student_name, titles(title_name, display_order)"),
+        .select(
+          "title_id, selected_student_name, selected_student_name_2, titles(title_name, display_order, title_type)",
+        ),
     ]);
 
     const titles = titlesResponse.data?.length ? titlesResponse.data : titlesFallback;
