@@ -7,48 +7,6 @@ Students get one-time voting credentials, vote for classmates under custom title
 
 ---
 
-## ✨ Features
-
-- One-time voting per student
-- Admin dashboard for managing titles and students
-- Support for both **single-person** and **duo** titles
-- CSV upload for students
-- CSV export with generated emails and passwords
-- Google Sheets + Apps Script workflow for emailing passwords
-- Live results dashboard
-- Modern UI built for software engineering students who *will* judge the design
-
----
-
-## 🖼️ Screenshots
-
-> Add your screenshots here once ready.
-
-### Landing Page
-```md
-![Landing Page](./screenshots/landing-page.png)
-````
-
-### Voting Page
-
-```md
-![Voting Page](./screenshots/voting-page.png)
-```
-
-### Admin Dashboard
-
-```md
-![Admin Dashboard](./screenshots/admin-dashboard.png)
-```
-
-### Export CSV Page
-
-```md
-![Export CSV Page](./screenshots/export-page.png)
-```
-
----
-
 ## 🚀 Setting this up for your own class
 
 Don’t worry — this is made for software engineering students, so everything is simple, structured, and copy-paste friendly.
@@ -151,7 +109,7 @@ Copy:
 You can add your own screenshot here in the README if you want:
 
 ```md
-![Supabase API Keys Location](./screenshots/supabase-api-keys.png)
+![Supabase API Keys Location](./src/pics/supabase_connect.png)
 ```
 
 ---
@@ -327,6 +285,48 @@ https://YOUR_VERCEL_LINK.vercel.app
 2. Approve permissions
 3. Emails will send automatically
 4. The `sent` column will update to `YES`
+
+---
+
+## ✨ Features
+
+- One-time voting per student
+- Admin dashboard for managing titles and students
+- Support for both **single-person** and **duo** titles
+- CSV upload for students
+- CSV export with generated emails and passwords
+- Google Sheets + Apps Script workflow for emailing passwords
+- Live results dashboard
+- Modern UI built for software engineering students who *will* judge the design
+
+---
+
+## 🖼️ Screenshots
+
+> Add your screenshots here once ready.
+
+### Landing Page
+```md
+![Landing Page](./screenshots/landing-page.png)
+````
+
+### Voting Page
+
+```md
+![Voting Page](./screenshots/voting-page.png)
+```
+
+### Admin Dashboard
+
+```md
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+```
+
+### Export CSV Page
+
+```md
+![Export CSV Page](./screenshots/export-page.png)
+```
 
 ---
 
