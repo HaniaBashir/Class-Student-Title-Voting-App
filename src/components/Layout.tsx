@@ -7,10 +7,10 @@ function Layout() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.28em] text-slate-500">
-              Farewell 2026
+              Class Voting Platform
             </p>
             <h1 className="mt-2 text-lg font-semibold text-slate-900">
-              Software Engineering Class Voting
+              Reusable farewell titles manager
             </h1>
           </div>
         </header>

@@ -8,10 +8,10 @@ function LandingPage() {
       <div className="section-shell overflow-hidden p-8 sm:p-10">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-[0.32em] text-slate-400">
-            Senior Farewell Experience
+            Reusable Voting Experience
           </p>
           <h2 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-            Class Farewell Titles Voting
+            Class farewell titles voting
           </h2>
           <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
             Vote honestly for the classmates who best match each title. You may skip any
@@ -46,7 +46,7 @@ function LandingPage() {
           <ShieldCheck className="h-8 w-8 text-emerald-500" />
           <h3 className="mt-5 text-xl font-semibold text-slate-900">Simple but controlled</h3>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Votes are stored in Supabase with one submission per voter name for a straightforward
+            Votes are stored in Supabase with one submission per roll number for a straightforward
             class project deployment.
           </p>
         </div>

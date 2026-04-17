@@ -1,7 +1,7 @@
 export type Student = {
   id: string;
   roll_number: string;
-  name: string;
+  student_name: string;
 };
 
 export type TitleType = "single" | "duo";
@@ -41,4 +41,13 @@ export type AggregatedVote = {
     name: string;
     votes: number;
   }>;
+};
+
+export type VoterCredential = {
+  id: string;
+  roll_number: string;
+  student_name: string;
+  voter_password: string;
+  is_used: boolean;
+  used_at: string | null;
 };

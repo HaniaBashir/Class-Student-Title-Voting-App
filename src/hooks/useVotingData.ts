@@ -15,7 +15,7 @@ export function useVotingData() {
       setError(null);
 
       const [studentsResponse, titlesResponse] = await Promise.all([
-        supabase.from("students").select("id, roll_number, name").order("roll_number"),
+        supabase.from("students").select("id, roll_number, student_name").order("roll_number"),
         supabase
           .from("titles")
           .select("id, title_name, display_order, title_type")
@@ -28,7 +28,7 @@ export function useVotingData() {
           STUDENTS.map((student, index) => ({
             id: `fallback-student-${index + 1}`,
             roll_number: student.roll_number,
-            name: student.name,
+            student_name: student.name,
           })),
         );
         setTitles(
@@ -43,8 +43,8 @@ export function useVotingData() {
         return;
       }
 
-      setStudents(studentsResponse.data);
-      setTitles(titlesResponse.data);
+      setStudents((studentsResponse.data ?? []) as Student[]);
+      setTitles((titlesResponse.data ?? []) as Title[]);
       setLoading(false);
     }
 

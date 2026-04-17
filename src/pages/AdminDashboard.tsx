@@ -1,6 +1,5 @@
-import { LogOut, RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -9,10 +8,9 @@ import StatsCard from "../components/StatsCard";
 import { TITLES } from "../data/constants";
 import { supabase } from "../lib/supabase";
 import type { AggregatedVote, Title } from "../types";
-import { aggregateVotes, isAdminAuthenticated } from "../utils/admin";
+import { aggregateVotes } from "../utils/admin";
 
 function AdminDashboard() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submissionCount, setSubmissionCount] = useState(0);
@@ -65,15 +63,6 @@ function AdminDashboard() {
     void loadDashboard();
   }, []);
 
-  function handleLogout() {
-    sessionStorage.removeItem("farewell_admin_ok");
-    navigate("/admin");
-  }
-
-  if (!isAdminAuthenticated()) {
-    return <Navigate to="/admin" replace />;
-  }
-
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -90,21 +79,15 @@ function AdminDashboard() {
               Live farewell voting results
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-              This dashboard is intentionally simple for a class project. In a real deployment,
-              admin analytics should be protected with proper Supabase auth and server-side checks.
+              Live participation metrics and title-by-title results stay available while the admin
+              sections handle reusable event setup.
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button variant="secondary" onClick={() => void loadDashboard()}>
-              <RefreshCcw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
-            </Button>
-          </div>
+          <Button variant="secondary" onClick={() => void loadDashboard()}>
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
         </div>
 
         {error ? (

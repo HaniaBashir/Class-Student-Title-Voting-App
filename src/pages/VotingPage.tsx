@@ -52,7 +52,7 @@ function VotingPage() {
     () =>
       students.map((student) => ({
         value: student.roll_number,
-        label: `${student.roll_number} - ${student.name}`,
+        label: `${student.roll_number} - ${student.student_name}`,
       })),
     [students],
   );
@@ -348,8 +348,8 @@ function VotingPage() {
         voteRows.map((row) => ({
           submission_id: submissionResponse.data.id,
           title_id: row.titleId,
-          selected_student_name: row.primaryStudent!.name,
-          selected_student_name_2: row.selection.isDuo ? row.secondaryStudent!.name : null,
+          selected_student_name: row.primaryStudent!.student_name,
+          selected_student_name_2: row.selection.isDuo ? row.secondaryStudent!.student_name : null,
         })),
       );
 
@@ -402,7 +402,7 @@ function VotingPage() {
 
       return {
         value: student.roll_number,
-        label: `${student.name} (${student.roll_number})`,
+        label: `${student.student_name} (${student.roll_number})`,
         disabled: isDisabled,
         description: isSelf ? "Self vote blocked" : isDisabled ? "Selected already" : undefined,
       };
@@ -441,7 +441,8 @@ function VotingPage() {
 
               {selectedVoter ? (
                 <p className="text-sm text-slate-500">
-                  Selected: <span className="font-medium text-slate-700">{selectedVoter.name}</span>
+                  Selected:{" "}
+                  <span className="font-medium text-slate-700">{selectedVoter.student_name}</span>
                 </p>
               ) : null}
 
