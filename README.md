@@ -1,51 +1,20 @@
+<h1 align="center">🎓 Farewell Voting App 🎓</h1>
 
-````markdown
-# 🎓 Farewell Voting App
+<p align="center">
+  <b>farewell nahi ho rahi toh kia?</b><br>
+  You can always have a title day in your class.<br>
+  Here is your step by step guide for it.
+</p>
 
-A clean, minimal, and reusable farewell voting platform for classes.  
-Students get one-time voting credentials, vote for classmates under custom titles, and admins manage everything from a simple dashboard.
+<p align="center">
+  A clean, minimal, and reusable farewell voting platform for classes.
+</p>
 
----
-
-## ✨ Features
-
-- One-time voting per student
-- Admin dashboard for managing titles and students
-- Support for both **single-person** and **duo** titles
-- CSV upload for students
-- CSV export with generated emails and passwords
-- Google Sheets + Apps Script workflow for emailing passwords
-- Live results dashboard
-- Modern UI built for software engineering students who *will* judge the design
-
----
-
-## 🖼️ Screenshots
-
-> Add your screenshots here once ready.
-
-### Landing Page
-```md
-![Landing Page](./screenshots/landing-page.png)
-````
-
-### Voting Page
-
-```md
-![Voting Page](./screenshots/voting-page.png)
-```
-
-### Admin Dashboard
-
-```md
-![Admin Dashboard](./screenshots/admin-dashboard.png)
-```
-
-### Export CSV Page
-
-```md
-![Export CSV Page](./screenshots/export-page.png)
-```
+<p align="center">
+  <img alt="React" src="https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue">
+  <img alt="Supabase" src="https://img.shields.io/badge/Backend-Supabase-green">
+  <img alt="Deploy" src="https://img.shields.io/badge/Deploy-Vercel-black">
+</p>
 
 ---
 
@@ -55,22 +24,20 @@ Don’t worry — this is made for software engineering students, so everything 
 
 ---
 
-## 1. 📥 Clone the repository
+## 📥 Clone the repository
 
-Open terminal and run:
+Open your terminal and run:
 
 ```bash
-git clone https://github.com/HaniaBashir/Class-Student-Title-Voting-App.git
-cd Class-Student-Title-Voting-App
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
 ```
 
 ---
 
-## 2. 📦 Install dependencies
+## 📦 Install dependencies
 
-Make sure you have Node.js installed first.
-
-Then run:
+Make sure Node.js is installed.
 
 ```bash
 npm install
@@ -78,96 +45,106 @@ npm install
 
 ---
 
-## 3. 🧠 Create your Supabase project
+## 🧠 Create your Supabase project
 
-Go here:
-👉 [https://supabase.com](https://supabase.com)
+Go to:
+[https://supabase.com](https://supabase.com)
 
-Steps:
+### Steps
 
 1. Sign up / log in
 2. Click **New Project**
-3. Give it a name, for example `class-voting`
-4. Set a database password and save it somewhere safe
-5. Wait for the project to finish creating
+3. Give it a name (e.g. `class-voting`)
+4. Set a database password and save it
+5. Wait for setup to complete
 
 ---
 
-## 4. 🗄️ Set up your database
+## 🗄️ Set up your database
 
 Go to:
 
-**Supabase Dashboard → SQL Editor**
+Supabase Dashboard → SQL Editor
 
 ### Run schema
 
-Open your repo and go to:
+Open:
 
-```text
+```
 supabase/schema.sql
 ```
 
 Copy everything from that file, paste it into Supabase SQL Editor, and click **Run**.
 
-## 5. 🔑 Set environment variables
+### Step 2 — Run seed (optional)
 
-Create a file in your project root called:
+If you want sample data, open:
 
 ```text
+supabase/seed.sql
+```
+
+Copy it, paste it into Supabase SQL Editor, and click **Run**.
+
+---
+
+## 🔑 Set environment variables
+
+Create a file in your project root:
+
+```
 .env
 ```
 
-Paste this inside:
+Paste:
 
 ```env
 VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 VITE_ADMIN_PASSWORD=your_admin_password_here
 ```
+
+---
 
 ### 📍 Where to get these values
 
 Go to:
 
-**Supabase → Settings → API**
+Supabase → Settings → API
 
 Copy:
 
-* **Project URL** → `VITE_SUPABASE_URL`
-* **anon public key** → `VITE_SUPABASE_ANON_KEY`
-
-You can add your own screenshot here in the README if you want:
-
-```md
-![Supabase API Keys Location](./screenshots/supabase-api-keys.png)
-```
+* Project URL → `VITE_SUPABASE_URL`
+* anon public key → `VITE_SUPABASE_ANON_KEY`
+* anon public key → `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ---
 
-## 6. ▶️ Run the app locally
+## ▶️ Run the app locally
 
 ```bash
 npm run dev
 ```
 
-Then open:
+Open:
 
-```text
+```
 http://localhost:5173
 ```
 
 ---
 
-## 7. 🌍 Deploy on Vercel
+## 🌍 Deploy on Vercel
 
-Go here:
-👉 [https://vercel.com](https://vercel.com)
+Go to:
+[https://vercel.com](https://vercel.com)
 
-Steps:
+### Steps
 
 1. Click **New Project**
 2. Import your GitHub repo
-3. Add the same environment variables from your `.env`
+3. Add same `.env` variables
 4. Click **Deploy**
 
 Done 🎉
@@ -176,9 +153,9 @@ Done 🎉
 
 ## ⚙️ Admin setup flow
 
-Once deployed, go to:
+Go to:
 
-```text
+```
 /admin
 ```
 
@@ -189,8 +166,8 @@ Enter your admin password.
 ## 🏷️ Step 1 — Add Titles
 
 * Go to **Titles**
-* Add your farewell titles
-* Choose the type:
+* Add farewell titles
+* Choose:
 
   * `single` → one person
   * `duo` → two people
@@ -199,16 +176,14 @@ Enter your admin password.
 
 ## 👩‍🎓 Step 2 — Add Students
 
-You have 2 options:
-
 ### Option A — Manual
 
-* Enter roll number and name
+* Enter roll number + name
 * Click **Add student**
 
-### Option B — CSV Upload (recommended)
+---
 
-Upload a CSV like this:
+### Option B — CSV Upload (recommended)
 
 ```csv
 Roll Number,Student Name
@@ -216,43 +191,41 @@ Roll Number,Student Name
 22i-2629,Abdul Faheem
 ```
 
-The CSV parser is designed to be flexible with column names.
-
 ---
 
 ## 📤 Step 3 — Export CSV
 
 Go to:
 
-**Export CSV**
+Export CSV
 
-This generates a downloadable CSV with:
+This file contains:
 
-* `roll_number`
-* `student_name`
-* `email`
-* `password`
-* `sent`
-
-This is the file you’ll use in Google Sheets to email credentials to your class.
+* roll_number
+* student_name
+* email
+* password
+* sent
 
 ---
 
-## 📧 Send passwords automatically using Google Sheets
+## 📧 Send passwords using Google Sheets
 
 ### Step 1 — Open Google Sheets
 
-👉 [https://sheets.google.com](https://sheets.google.com)
+[https://sheets.google.com](https://sheets.google.com)
 
-Import your exported CSV file.
+Import your CSV
+
+---
 
 ### Step 2 — Open Apps Script
 
-From the top menu:
+Extensions → Apps Script
 
-**Extensions → Apps Script**
+---
 
-### Step 3 — Replace the default code with this
+### Step 3 — Paste this code
 
 ```javascript
 function sendVotingEmails() {
@@ -295,51 +268,63 @@ Good luck ✨`;
 }
 ```
 
-### Step 4 — Replace the voting link
+---
+
+### Step 4 — Add your link
 
 Replace:
 
-```text
+```
 PASTE_YOUR_WEBSITE_LINK_HERE
 ```
 
-with your deployed Vercel URL, for example:
+with:
 
-```text
+```
 https://YOUR_VERCEL_LINK.vercel.app
 ```
 
-### Step 5 — Run it
+---
 
-1. Click **Run**
-2. Approve permissions
-3. Emails will send automatically
-4. The `sent` column will update to `YES`
+### Step 5 — Run
+
+* Click **Run**
+* Allow permissions
+* Emails will send automatically
 
 ---
 
-## 💡 Supabase Free Tier Note
+## ✨ Features
 
-This app uses Supabase.
+* One-time voting per student
+* Admin dashboard
+* Single + duo titles
+* CSV upload & export
+* Auto email system via Google Sheets
+* Live results dashboard
+* Clean modern UI
 
-At the time of writing:
+---
 
-* the Free Plan allows **2 active free projects**
-* it is suitable for student and class projects
-* users should still verify current pricing before use
+## 🖼️ Screenshots
 
-Check the latest pricing here:
-👉 [https://supabase.com/pricing](https://supabase.com/pricing)
+Add your images here:
+
+```md
+![Landing Page](./screenshots/landing-page.png)
+![Voting Page](./screenshots/voting-page.png)
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+```
 
 ---
 
 ## 🧱 Tech Stack
 
-* **Frontend:** React + Vite
-* **Styling:** Tailwind CSS
-* **Backend / Database:** Supabase
-* **Charts:** Recharts
-* **Deployment:** Vercel
+* Frontend: React + Vite
+* Styling: Tailwind CSS
+* Backend: Supabase
+* Charts: Recharts
+* Deployment: Vercel
 
 ---
 
@@ -351,14 +336,7 @@ farewell-voting-app/
 │  ├─ schema.sql
 │  └─ seed.sql
 ├─ src/
-│  ├─ components/
-│  ├─ pages/
-│  ├─ hooks/
-│  ├─ lib/
-│  ├─ data/
-│  ├─ utils/
-│  └─ types/
-├─ .env.example
+├─ .env
 ├─ package.json
 └─ README.md
 ```
@@ -367,17 +345,18 @@ farewell-voting-app/
 
 ## 🧠 Notes
 
-* Each student gets **one vote only**
-* Passwords are **one-time use**
+* Each student gets one vote
+* Passwords are one-time use
 * Duplicate voting is blocked
-* Duo titles are supported
-* Admin can manage setup without editing code
-* CSV export is designed to work smoothly with Google Sheets
+* Admin setup is simple
+* Works smoothly with Google Sheets
 
 ---
 
 ## 🫶 Made for students, by students
 
-If you're using this for your class — good luck and have fun with it.
+If you're using this for your class — good luck.
+
 And yes, people *will* take voting very seriously 😭
-``
+
+```
