@@ -300,14 +300,13 @@ https://YOUR_VERCEL_LINK.vercel.app
 
 Add your images here:
 
-```md
+
 ![Landing Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/landing_page.png)
 ![Landing Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/landing_page.png)
 ![Voting Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/voting_page.png)
 ![Admin Dashboard Add Titles](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/Add_new_title.png)
 ![Admin Dashboard Add Students](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/Add_Students.png)
 ![Admin Dashboard Voting Results](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/voting_results.png)
-```
 
 ---
 
