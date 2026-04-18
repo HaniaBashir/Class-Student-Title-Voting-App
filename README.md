@@ -1,4 +1,10 @@
 
+<h1 align="center" style="font-size: 60px;">🎓 FAREWELL VOTING APP 🎓</h1>
+
+<p align="center" style="font-size: 22px;">
+<i>farwell nahi ho rahi toh kia? You can always have a title day in your class. Here is your step by step guide for it</i>
+</p>
+
 ````markdown
 # 🎓 Farewell Voting App
 
@@ -91,6 +97,7 @@ Paste this inside:
 
 ```env
 VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 VITE_ADMIN_PASSWORD=your_admin_password_here
 ```
@@ -100,11 +107,14 @@ VITE_ADMIN_PASSWORD=your_admin_password_here
 Go to:
 
 **Supabase → Settings → API**
+OR
+**Supabase → top nav bar → Connect**
 
 Copy:
 
 * **Project URL** → `VITE_SUPABASE_URL`
 * **anon public key** → `VITE_SUPABASE_ANON_KEY`
+* **anon public key** → `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 You can add your own screenshot here in the README if you want:
 
