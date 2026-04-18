@@ -60,8 +60,8 @@ Don’t worry — this is made for software engineering students, so everything 
 Open terminal and run:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/HaniaBashir/Class-Student-Title-Voting-App.git
+cd Class-Student-Title-Voting-App
 ```
 
 ---
@@ -99,7 +99,7 @@ Go to:
 
 **Supabase Dashboard → SQL Editor**
 
-### Step 1 — Run schema
+### Run schema
 
 Open your repo and go to:
 
@@ -108,18 +108,6 @@ supabase/schema.sql
 ```
 
 Copy everything from that file, paste it into Supabase SQL Editor, and click **Run**.
-
-### Step 2 — Run seed (optional)
-
-If you want sample data, open:
-
-```text
-supabase/seed.sql
-```
-
-Copy it, paste it into Supabase SQL Editor, and click **Run**.
-
----
 
 ## 5. 🔑 Set environment variables
 
