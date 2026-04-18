@@ -301,11 +301,12 @@ https://YOUR_VERCEL_LINK.vercel.app
 Add your images here:
 
 ```md
-![Landing Page](./src/pics/landing_page.png)
-![Voting Page](./src/pics/voting_page.png)
-![Admin Dashboard Add Titles](./src/pics/Add_new_title.png)
-![Admin Dashboard Add Students](./src/pics/Add_Students.png)
-![Admin Dashboard Voting Results](./src/pics/Screenshot%202026-04-18%20220346.png)
+![Landing Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/landing_page.png)
+![Landing Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/landing_page.png)
+![Voting Page](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/voting_page.png)
+![Admin Dashboard Add Titles](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/Add_new_title.png)
+![Admin Dashboard Add Students](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/Add_Students.png)
+![Admin Dashboard Voting Results](https://raw.githubusercontent.com/HaniaBashir/Class-Student-Title-Voting-App/main/src/pics/voting_results.png)
 ```
 
 ---
