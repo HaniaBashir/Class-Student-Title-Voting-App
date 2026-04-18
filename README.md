@@ -29,8 +29,8 @@ Don’t worry — this is made for software engineering students, so everything 
 Open your terminal and run:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/HaniaBashir/Class-Student-Title-Voting-App.git
+cd Class-Student-Title-Voting-App
 ```
 
 ---
@@ -76,18 +76,6 @@ supabase/schema.sql
 
 Copy everything from that file, paste it into Supabase SQL Editor, and click **Run**.
 
-### Step 2 — Run seed (optional)
-
-If you want sample data, open:
-
-```text
-supabase/seed.sql
-```
-
-Copy it, paste it into Supabase SQL Editor, and click **Run**.
-
----
-
 ## 🔑 Set environment variables
 
 Create a file in your project root:
@@ -111,13 +99,15 @@ VITE_ADMIN_PASSWORD=your_admin_password_here
 
 Go to:
 
-Supabase → Settings → API
+Supabase → Settings → API Keys
+or
+Supabase → Top Nav Bar → Connect
 
 Copy:
 
 * Project URL → `VITE_SUPABASE_URL`
 * anon public key → `VITE_SUPABASE_ANON_KEY`
-* anon public key → `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+* Publishable Default key → `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
 ---
 
@@ -156,7 +146,7 @@ Done 🎉
 Go to:
 
 ```
-/admin
+localhost:****/admin
 ```
 
 Enter your admin password.
@@ -311,9 +301,11 @@ https://YOUR_VERCEL_LINK.vercel.app
 Add your images here:
 
 ```md
-![Landing Page](./screenshots/landing-page.png)
-![Voting Page](./screenshots/voting-page.png)
-![Admin Dashboard](./screenshots/admin-dashboard.png)
+![Landing Page](./src/pics/landing_page.png)
+![Voting Page](./src/pics/voting_page.png)
+![Admin Dashboard Add Titles](./src/pics/Add_new_title.png)
+![Admin Dashboard Add Students](./src/pics/Add_Students.png)
+![Admin Dashboard Voting Results](./src/pics/Screenshot%202026-04-18%20220346.png)
 ```
 
 ---
