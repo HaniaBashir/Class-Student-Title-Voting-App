@@ -1,6 +1,3 @@
-
-
-````markdown
 <h1 align="center">🎓 Farewell Voting App 🎓</h1>
 
 <p align="center">
