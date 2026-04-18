@@ -92,12 +92,15 @@ function AdminExportPage() {
     setFeedback(null);
 
     const [studentsResponse, credentialsResponse] = await Promise.all([
-      supabase.from("students").select("*").order("roll_number"),
+      supabase.from("students").select("id, roll_number, name").order("roll_number"),
       supabase
         .from("voter_credentials")
-        .select("id, roll_number, student_name, email, voter_password, is_used, used_at"),
+        .select("id, roll_number, student_name, email, voter_password, is_used, used_at")
+        .order("roll_number"),
     ]);
 
+    console.log("students response", studentsResponse.data, studentsResponse.error);
+    console.log("credentials response", credentialsResponse.data, credentialsResponse.error);
     console.log("[AdminExportPage] studentsResponse", studentsResponse);
     console.log("[AdminExportPage] credentialsResponse", credentialsResponse);
 

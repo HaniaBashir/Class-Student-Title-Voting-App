@@ -8,6 +8,27 @@ import { buildCredentialUpserts } from "../utils/credentials";
 
 type UtilityAction = "reset-submissions" | "reset-password-usage" | "regenerate-passwords" | null;
 
+function mapStudentRow(row: Record<string, unknown>): Student | null {
+  const id = typeof row.id === "string" ? row.id : "";
+  const rollNumber = typeof row.roll_number === "string" ? row.roll_number : "";
+  const studentName =
+    typeof row.name === "string"
+      ? row.name
+      : typeof row.student_name === "string"
+        ? row.student_name
+        : "";
+
+  if (!id || !rollNumber || !studentName) {
+    return null;
+  }
+
+  return {
+    id,
+    roll_number: rollNumber,
+    student_name: studentName,
+  };
+}
+
 function AdminUtilitiesPage() {
   const [pendingAction, setPendingAction] = useState<UtilityAction>(null);
   const [working, setWorking] = useState(false);
@@ -51,17 +72,23 @@ function AdminUtilitiesPage() {
 
     if (pendingAction === "regenerate-passwords") {
       const [studentsResponse, credentialsResponse] = await Promise.all([
-        supabase.from("students").select("id, roll_number, student_name"),
+        supabase.from("students").select("id, roll_number, name").order("roll_number"),
         supabase
           .from("voter_credentials")
-          .select("id, roll_number, student_name, voter_password, is_used, used_at"),
+          .select("id, roll_number, student_name, voter_password, is_used, used_at")
+          .order("roll_number"),
       ]);
+
+      console.log("students response", studentsResponse.data, studentsResponse.error);
+      console.log("credentials response", credentialsResponse.data, credentialsResponse.error);
 
       if (studentsResponse.error || credentialsResponse.error) {
         setError("Students or credentials could not be loaded.");
       } else {
         const upserts = buildCredentialUpserts(
-          (studentsResponse.data ?? []) as Student[],
+          (studentsResponse.data ?? [])
+            .map((row) => mapStudentRow(row as Record<string, unknown>))
+            .filter((student): student is Student => student !== null),
           (credentialsResponse.data ?? []) as VoterCredential[],
           true,
         );

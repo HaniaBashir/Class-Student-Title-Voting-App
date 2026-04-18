@@ -52,10 +52,10 @@ function AdminStudentsPage() {
     const id = typeof row.id === "string" ? row.id : "";
     const rollNumber = typeof row.roll_number === "string" ? row.roll_number : "";
     const studentName =
-      typeof row.student_name === "string"
-        ? row.student_name
-        : typeof row.name === "string"
-          ? row.name
+      typeof row.name === "string"
+        ? row.name
+        : typeof row.student_name === "string"
+          ? row.student_name
           : "";
 
     if (!id || !rollNumber || !studentName) {
@@ -73,8 +73,10 @@ function AdminStudentsPage() {
     setLoading(true);
     const response = await supabase
       .from("students")
-      .select("*")
+      .select("id, roll_number, name")
       .order("roll_number");
+
+    console.log("students response", response.data, response.error);
 
     console.log("[AdminStudentsPage] students fetch response", {
       data: response.data,
@@ -158,9 +160,14 @@ function AdminStudentsPage() {
   }
 
   async function applyStudentUpsert(previous: Student | null, next: StudentFormState) {
+    const studentPayload = {
+      roll_number: next.roll_number,
+      name: next.student_name,
+    };
+
     const response = previous
-      ? await supabase.from("students").update(next).eq("id", previous.id)
-      : await supabase.from("students").insert(next);
+      ? await supabase.from("students").update(studentPayload).eq("id", previous.id)
+      : await supabase.from("students").insert(studentPayload);
 
     if (response.error) {
       throw new Error(response.error.message);
