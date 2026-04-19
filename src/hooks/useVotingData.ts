@@ -6,12 +6,7 @@ import type { Student, Title } from "../types";
 function mapStudentRow(row: Record<string, unknown>): Student | null {
   const id = typeof row.id === "string" ? row.id : "";
   const rollNumber = typeof row.roll_number === "string" ? row.roll_number : "";
-  const studentName =
-    typeof row.name === "string"
-      ? row.name
-      : typeof row.student_name === "string"
-        ? row.student_name
-        : "";
+  const studentName = typeof row.student_name === "string" ? row.student_name : "";
 
   if (!id || !rollNumber || !studentName) {
     return null;
@@ -36,7 +31,7 @@ export function useVotingData() {
       setError(null);
 
       const [studentsResponse, titlesResponse] = await Promise.all([
-        supabase.from("students").select("id, roll_number, name").order("roll_number"),
+        supabase.from("students").select("id, roll_number, student_name").order("roll_number"),
         supabase
           .from("titles")
           .select("id, title_name, display_order, title_type")

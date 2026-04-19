@@ -51,12 +51,7 @@ function AdminStudentsPage() {
   function mapStudentRow(row: Record<string, unknown>): Student | null {
     const id = typeof row.id === "string" ? row.id : "";
     const rollNumber = typeof row.roll_number === "string" ? row.roll_number : "";
-    const studentName =
-      typeof row.name === "string"
-        ? row.name
-        : typeof row.student_name === "string"
-          ? row.student_name
-          : "";
+    const studentName = typeof row.student_name === "string" ? row.student_name : "";
 
     if (!id || !rollNumber || !studentName) {
       return null;
@@ -73,7 +68,7 @@ function AdminStudentsPage() {
     setLoading(true);
     const response = await supabase
       .from("students")
-      .select("id, roll_number, name")
+      .select("id, roll_number, student_name")
       .order("roll_number");
 
     console.log("students response", response.data, response.error);
@@ -162,12 +157,25 @@ function AdminStudentsPage() {
   async function applyStudentUpsert(previous: Student | null, next: StudentFormState) {
     const studentPayload = {
       roll_number: next.roll_number,
-      name: next.student_name,
+      student_name: next.student_name,
     };
+
+    console.log("[AdminStudentsPage] student upsert payload", {
+      mode: previous ? "update" : "insert",
+      payload: studentPayload,
+      previousStudentId: previous?.id ?? null,
+    });
 
     const response = previous
       ? await supabase.from("students").update(studentPayload).eq("id", previous.id)
       : await supabase.from("students").insert(studentPayload);
+
+    console.log("[AdminStudentsPage] student upsert supabase response", {
+      data: response.data,
+      error: response.error,
+      status: response.status,
+      statusText: response.statusText,
+    });
 
     if (response.error) {
       throw new Error(response.error.message);
@@ -262,6 +270,7 @@ function AdminStudentsPage() {
           return;
         }
 
+        console.log("[AdminStudentsPage] parsed CSV rows", parsed.parsedRows);
         console.log("[AdminStudentsPage] detected headers", parsed.detectedHeaders);
         console.log("[AdminStudentsPage] normalized headers", parsed.normalizedHeaders);
         console.log("[AdminStudentsPage] invalid row reasons", parsed.invalidRowReasons);
@@ -318,6 +327,7 @@ function AdminStudentsPage() {
 
     try {
       for (const row of csvPreviewRows) {
+        console.log("[AdminStudentsPage] importing parsed CSV row", row);
         const existingStudent = existingByRoll.get(row.roll_number) ?? null;
 
         if (

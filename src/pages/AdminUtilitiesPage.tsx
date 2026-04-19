@@ -11,12 +11,7 @@ type UtilityAction = "reset-submissions" | "reset-password-usage" | "regenerate-
 function mapStudentRow(row: Record<string, unknown>): Student | null {
   const id = typeof row.id === "string" ? row.id : "";
   const rollNumber = typeof row.roll_number === "string" ? row.roll_number : "";
-  const studentName =
-    typeof row.name === "string"
-      ? row.name
-      : typeof row.student_name === "string"
-        ? row.student_name
-        : "";
+  const studentName = typeof row.student_name === "string" ? row.student_name : "";
 
   if (!id || !rollNumber || !studentName) {
     return null;
@@ -72,7 +67,7 @@ function AdminUtilitiesPage() {
 
     if (pendingAction === "regenerate-passwords") {
       const [studentsResponse, credentialsResponse] = await Promise.all([
-        supabase.from("students").select("id, roll_number, name").order("roll_number"),
+        supabase.from("students").select("id, roll_number, student_name").order("roll_number"),
         supabase
           .from("voter_credentials")
           .select("id, roll_number, student_name, voter_password, is_used, used_at")

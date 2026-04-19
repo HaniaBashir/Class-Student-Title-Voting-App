@@ -63,11 +63,7 @@ function AdminExportPage() {
     const rollNumber =
       typeof row.roll_number === "string" ? row.roll_number.trim().toLowerCase() : "";
     const studentName =
-      typeof row.student_name === "string"
-        ? row.student_name.trim()
-        : typeof row.name === "string"
-          ? row.name.trim()
-          : "";
+      typeof row.student_name === "string" ? row.student_name.trim() : "";
 
     if (!rollNumber || !studentName) {
       return null;
@@ -92,15 +88,13 @@ function AdminExportPage() {
     setFeedback(null);
 
     const [studentsResponse, credentialsResponse] = await Promise.all([
-      supabase.from("students").select("id, roll_number, name").order("roll_number"),
+      supabase.from("students").select("roll_number, student_name").order("roll_number"),
       supabase
         .from("voter_credentials")
-        .select("id, roll_number, student_name, email, voter_password, is_used, used_at")
+        .select("roll_number, student_name, voter_password, is_used, used_at")
         .order("roll_number"),
     ]);
 
-    console.log("students response", studentsResponse.data, studentsResponse.error);
-    console.log("credentials response", credentialsResponse.data, credentialsResponse.error);
     console.log("[AdminExportPage] studentsResponse", studentsResponse);
     console.log("[AdminExportPage] credentialsResponse", credentialsResponse);
 
@@ -138,10 +132,14 @@ function AdminExportPage() {
       .filter((credential): credential is NonNullable<typeof credential> => Boolean(credential));
 
     if (missingCredentialRows.length > 0) {
+      console.log("[AdminExportPage] missingCredentialRows", missingCredentialRows);
+
       const insertResponse = await supabase
         .from("voter_credentials")
         .insert(missingCredentialRows)
-        .select("id, roll_number, student_name, email, voter_password, is_used, used_at");
+        .select("roll_number, student_name, voter_password, is_used, used_at");
+
+      console.log("[AdminExportPage] credentialInsertResponse", insertResponse);
 
       if (insertResponse.error) {
         console.error("[AdminExportPage] credential creation failed", insertResponse.error);
